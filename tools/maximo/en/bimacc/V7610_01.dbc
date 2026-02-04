@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+* Copyright IBM Corporation 2009-2026
+*
+* Licensed under the Eclipse Public License - v 1.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* https://www.eclipse.org/legal/epl-v10.html
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* 
+* @Author ACC Plugin Development Team
+* ACC Plugin Database Script - Initial Table Creation
+-->
+<script author="ACC Plugin Team" scriptname="V7610_01">
+	<description>ACC Plugin - Create core tables for Autodesk Construction Cloud integration</description>
+	<statements>
+		<!-- ACCPROJECT Table -->
+		<create_table tablename="ACCPROJECT">
+			<attrdef attribute="ACCPROJECTID" maxtype="BIGINT" required="true" remarks="Unique identifier for ACC project record"/>
+			<attrdef attribute="PROJECTID" maxtype="VARCHAR(128)" required="true" remarks="ACC project ID"/>
+			<attrdef attribute="ACCOUNTID" maxtype="VARCHAR(128)" required="true" remarks="ACC account ID"/>
+			<attrdef attribute="PROJECTNAME" maxtype="VARCHAR(256)" remarks="Project name"/>
+			<attrdef attribute="PROJECTTYPE" maxtype="VARCHAR(64)" remarks="Project type (ACC, BIM360)"/>
+			<attrdef attribute="SITEID" maxtype="VARCHAR(8)" required="true" remarks="Maximo site ID"/>
+			<attrdef attribute="ORGID" maxtype="VARCHAR(8)" required="true" remarks="Maximo organization ID"/>
+			<attrdef attribute="DESCRIPTION" maxtype="VARCHAR(512)" remarks="Project description"/>
+			<attrdef attribute="STATUS" maxtype="VARCHAR(32)" remarks="Project status"/>
+			<attrdef attribute="LASTSYNCED" maxtype="DATETIME" remarks="Last sync timestamp"/>
+			<attrdef attribute="CREATEDATE" maxtype="DATETIME" remarks="Record creation date"/>
+			<attrdef attribute="CHANGEDATE" maxtype="DATETIME" remarks="Record change date"/>
+			<attrdef attribute="CHANGEBY" maxtype="VARCHAR(30)" remarks="User who changed record"/>
+		</create_table>
+		
+		<!-- ACCMODELSET Table -->
+		<create_table tablename="ACCMODELSET">
+			<attrdef attribute="MODELSETID" maxtype="BIGINT" required="true" remarks="Unique identifier for model set"/>
+			<attrdef attribute="ACCPROJECTID" maxtype="BIGINT" required="true" remarks="Link to ACCPROJECT"/>
+			<attrdef attribute="MODELSETNAME" maxtype="VARCHAR(256)" remarks="Model set name"/>
+			<attrdef attribute="ACCMODELSETID" maxtype="VARCHAR(128)" remarks="ACC model set ID"/>
+			<attrdef attribute="STATUS" maxtype="VARCHAR(32)" remarks="Model set status"/>
+			<attrdef attribute="LASTCLASHRUN" maxtype="DATETIME" remarks="Last clash detection run"/>
+			<attrdef attribute="CREATEDATE" maxtype="DATETIME" remarks="Record creation date"/>
+			<attrdef attribute="CHANGEDATE" maxtype="DATETIME" remarks="Record change date"/>
+			<attrdef attribute="CHANGEBY" maxtype="VARCHAR(30)" remarks="User who changed record"/>
+		</create_table>
+		
+		<!-- ACCCLASH Table -->
+		<create_table tablename="ACCCLASH">
+			<attrdef attribute="CLASHID" maxtype="BIGINT" required="true" remarks="Unique identifier for clash"/>
+			<attrdef attribute="MODELSETID" maxtype="BIGINT" required="true" remarks="Link to ACCMODELSET"/>
+			<attrdef attribute="ACCCLASHID" maxtype="VARCHAR(128)" remarks="ACC clash ID"/>
+			<attrdef attribute="CLASHNAME" maxtype="VARCHAR(256)" remarks="Clash name"/>
+			<attrdef attribute="STATUS" maxtype="VARCHAR(32)" remarks="Clash status"/>
+			<attrdef attribute="SEVERITY" maxtype="VARCHAR(32)" remarks="Clash severity"/>
+			<attrdef attribute="WORKORDERID" maxtype="BIGINT" remarks="Linked work order ID"/>
+			<attrdef attribute="ASSIGNEDTO" maxtype="VARCHAR(30)" remarks="User assigned to clash"/>
+			<attrdef attribute="LOCATIONX" maxtype="DECIMAL(18,6)" remarks="Clash X coordinate"/>
+			<attrdef attribute="LOCATIONY" maxtype="DECIMAL(18,6)" remarks="Clash Y coordinate"/>
+			<attrdef attribute="LOCATIONZ" maxtype="DECIMAL(18,6)" remarks="Clash Z coordinate"/>
+			<attrdef attribute="VIEWPOINTURN" maxtype="VARCHAR(512)" remarks="Saved viewpoint URN"/>
+			<attrdef attribute="DETECTEDDATE" maxtype="DATETIME" remarks="Clash detection date"/>
+			<attrdef attribute="RESOLVEDDATE" maxtype="DATETIME" remarks="Clash resolution date"/>
+			<attrdef attribute="CREATEDATE" maxtype="DATETIME" remarks="Record creation date"/>
+			<attrdef attribute="CHANGEDATE" maxtype="DATETIME" remarks="Record change date"/>
+			<attrdef attribute="CHANGEBY" maxtype="VARCHAR(30)" remarks="User who changed record"/>
+		</create_table>
+		
+		<!-- ACCISSUE Table -->
+		<create_table tablename="ACCISSUE">
+			<attrdef attribute="ISSUEID" maxtype="BIGINT" required="true" remarks="Unique identifier for issue"/>
+			<attrdef attribute="ACCPROJECTID" maxtype="BIGINT" required="true" remarks="Link to ACCPROJECT"/>
+			<attrdef attribute="ACCISSUEID" maxtype="VARCHAR(128)" remarks="ACC issue ID"/>
+			<attrdef attribute="TITLE" maxtype="VARCHAR(256)" remarks="Issue title"/>
+			<attrdef attribute="DESCRIPTION" maxtype="CLOB" remarks="Issue description"/>
+			<attrdef attribute="STATUS" maxtype="VARCHAR(32)" remarks="Issue status"/>
+			<attrdef attribute="PRIORITY" maxtype="VARCHAR(32)" remarks="Issue priority"/>
+			<attrdef attribute="ISSUETYPE" maxtype="VARCHAR(64)" remarks="Issue type"/>
+			<attrdef attribute="WORKORDERID" maxtype="BIGINT" remarks="Linked work order ID"/>
+			<attrdef attribute="ASSIGNEDTO" maxtype="VARCHAR(30)" remarks="User assigned to issue"/>
+			<attrdef attribute="DUEDATE" maxtype="DATETIME" remarks="Issue due date"/>
+			<attrdef attribute="CREATEDATE" maxtype="DATETIME" remarks="Record creation date"/>
+			<attrdef attribute="CHANGEDATE" maxtype="DATETIME" remarks="Record change date"/>
+			<attrdef attribute="CHANGEBY" maxtype="VARCHAR(30)" remarks="User who changed record"/>
+		</create_table>
+		
+		<!-- ACCMODEL Table -->
+		<create_table tablename="ACCMODEL">
+			<attrdef attribute="MODELID" maxtype="BIGINT" required="true" remarks="Unique identifier for model"/>
+			<attrdef attribute="ACCPROJECTID" maxtype="BIGINT" required="true" remarks="Link to ACCPROJECT"/>
+			<attrdef attribute="ACCMODELID" maxtype="VARCHAR(128)" remarks="ACC model ID"/>
+			<attrdef attribute="MODELNAME" maxtype="VARCHAR(256)" remarks="Model name"/>
+			<attrdef attribute="MODELURN" maxtype="VARCHAR(512)" remarks="Model URN"/>
+			<attrdef attribute="VERSION" maxtype="VARCHAR(32)" remarks="Model version"/>
+			<attrdef attribute="FILETYPE" maxtype="VARCHAR(32)" remarks="File type"/>
+			<attrdef attribute="FILESIZE" maxtype="BIGINT" remarks="File size in bytes"/>
+			<attrdef attribute="UPLOADDATE" maxtype="DATETIME" remarks="Upload date"/>
+			<attrdef attribute="CREATEDATE" maxtype="DATETIME" remarks="Record creation date"/>
+			<attrdef attribute="CHANGEDATE" maxtype="DATETIME" remarks="Record change date"/>
+			<attrdef attribute="CHANGEBY" maxtype="VARCHAR(30)" remarks="User who changed record"/>
+		</create_table>
+		
+		<!-- Primary Keys -->
+		<add_attributes tablename="ACCPROJECT">
+			<primarykey>
+				<name>ACCPROJECT_PK</name>
+				<column name="ACCPROJECTID"/>
+			</primarykey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCMODELSET">
+			<primarykey>
+				<name>ACCMODELSET_PK</name>
+				<column name="MODELSETID"/>
+			</primarykey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCCLASH">
+			<primarykey>
+				<name>ACCCLASH_PK</name>
+				<column name="CLASHID"/>
+			</primarykey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCISSUE">
+			<primarykey>
+				<name>ACCISSUE_PK</name>
+				<column name="ISSUEID"/>
+			</primarykey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCMODEL">
+			<primarykey>
+				<name>ACCMODEL_PK</name>
+				<column name="MODELID"/>
+			</primarykey>
+		</add_attributes>
+		
+		<!-- Foreign Keys -->
+		<add_attributes tablename="ACCMODELSET">
+			<foreignkey name="ACCMODELSET_ACCPROJECT_FK">
+				<fkcolumn name="ACCPROJECTID"/>
+				<key>
+					<keycolumn name="ACCPROJECTID" table="ACCPROJECT"/>
+				</key>
+			</foreignkey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCCLASH">
+			<foreignkey name="ACCCLASH_ACCMODELSET_FK">
+				<fkcolumn name="MODELSETID"/>
+				<key>
+					<keycolumn name="MODELSETID" table="ACCMODELSET"/>
+				</key>
+			</foreignkey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCISSUE">
+			<foreignkey name="ACCISSUE_ACCPROJECT_FK">
+				<fkcolumn name="ACCPROJECTID"/>
+				<key>
+					<keycolumn name="ACCPROJECTID" table="ACCPROJECT"/>
+				</key>
+			</foreignkey>
+		</add_attributes>
+		
+		<add_attributes tablename="ACCMODEL">
+			<foreignkey name="ACCMODEL_ACCPROJECT_FK">
+				<fkcolumn name="ACCPROJECTID"/>
+				<key>
+					<keycolumn name="ACCPROJECTID" table="ACCPROJECT"/>
+				</key>
+			</foreignkey>
+		</add_attributes>
+		
+		<!-- Indexes -->
+		<create_index tablename="ACCPROJECT" indexname="ACCPROJECT_IDX1" unique="true">
+			<indexcolumn name="PROJECTID"/>
+			<indexcolumn name="SITEID"/>
+		</create_index>
+		
+		<create_index tablename="ACCMODELSET" indexname="ACCMODELSET_IDX1">
+			<indexcolumn name="ACCPROJECTID"/>
+		</create_index>
+		
+		<create_index tablename="ACCCLASH" indexname="ACCCLASH_IDX1">
+			<indexcolumn name="MODELSETID"/>
+		</create_index>
+		
+		<create_index tablename="ACCCLASH" indexname="ACCCLASH_IDX2">
+			<indexcolumn name="WORKORDERID"/>
+		</create_index>
+		
+		<create_index tablename="ACCCLASH" indexname="ACCCLASH_IDX3">
+			<indexcolumn name="STATUS"/>
+		</create_index>
+		
+		<create_index tablename="ACCISSUE" indexname="ACCISSUE_IDX1">
+			<indexcolumn name="ACCPROJECTID"/>
+		</create_index>
+		
+		<create_index tablename="ACCISSUE" indexname="ACCISSUE_IDX2">
+			<indexcolumn name="WORKORDERID"/>
+		</create_index>
+		
+		<create_index tablename="ACCMODEL" indexname="ACCMODEL_IDX1">
+			<indexcolumn name="ACCPROJECTID"/>
+		</create_index>
+		
+	</statements>
+</script>
