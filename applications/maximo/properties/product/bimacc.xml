@@ -21,14 +21,14 @@
 	<version>
 		<major>1</major>
 		<minor>0</minor>
-		<modlevel>0</modlevel>
+		<modlevel>1</modlevel>
 		<patch>0</patch>
-		<build>20260204-0100</build>
+		<build>20260323-0100</build>
 	</version>
 	<dbmaxvarname>BIMACC</dbmaxvarname>
 	<dbscripts>bimacc</dbscripts>
-	<dbversion>V7610-01</dbversion>
-	<lastdbversion>V7610-01</lastdbversion>
+	<dbversion>V7610-02</dbversion>
+	<lastdbversion>V7610-02</lastdbversion>
 </product>
 
 <!-- Made with Bob -->

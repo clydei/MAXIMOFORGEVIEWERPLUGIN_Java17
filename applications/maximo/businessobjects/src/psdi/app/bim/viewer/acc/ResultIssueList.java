@@ -49,6 +49,8 @@ public class ResultIssueList extends Result {
         if (issues != null) {
             this.totalCount = issues.size();
         }
+        // Invalidate caches when issues are updated
+        invalidateCaches();
     }
     
     public String getNextPageToken() {
@@ -77,42 +79,190 @@ public class ResultIssueList extends Result {
         }
         this.issues.add(issue);
         this.totalCount = this.issues.size();
+        // Invalidate caches when issue is added
+        invalidateCaches();
     }
     
     /**
      * Get only open issues.
+     * Performance: Cached result, computed once on first access.
+     *
+     * @return Immutable list of open issues
      */
     public List<ACCIssue> getOpenIssues() {
-        if (issues == null) {
-            return new ArrayList<>();
+        if (openIssues == null) {
+            if (issues == null) {
+                openIssues = List.of();
+            } else {
+                openIssues = issues.stream()
+                    .filter(ACCIssue::isOpen)
+                    .toList(); // Java 17 - returns immutable list
+            }
         }
-        return issues.stream()
-            .filter(ACCIssue::isOpen)
-            .collect(Collectors.toList());
+        return openIssues;
     }
     
     /**
      * Get only overdue issues.
+     * Performance: Cached result, uses parallel stream for large datasets.
+     *
+     * @return Immutable list of overdue issues
      */
     public List<ACCIssue> getOverdueIssues() {
-        if (issues == null) {
-            return new ArrayList<>();
+        if (overdueIssues == null) {
+            if (issues == null) {
+                overdueIssues = List.of();
+            } else {
+                // Use parallel stream for large datasets
+                if (issues.size() > 1000) {
+                    overdueIssues = issues.parallelStream()
+                        .filter(ACCIssue::isOverdue)
+                        .toList();
+                } else {
+                    overdueIssues = issues.stream()
+                        .filter(ACCIssue::isOverdue)
+                        .toList();
+                }
+            }
         }
-        return issues.stream()
-            .filter(ACCIssue::isOverdue)
-            .collect(Collectors.toList());
+        return overdueIssues;
     }
     
     /**
      * Get only high priority issues.
+     * Performance: Cached result, computed once on first access.
+     *
+     * @return Immutable list of high priority issues
      */
     public List<ACCIssue> getHighPriorityIssues() {
-        if (issues == null) {
-            return new ArrayList<>();
+        if (highPriorityIssues == null) {
+            if (issues == null) {
+                highPriorityIssues = List.of();
+            } else {
+                highPriorityIssues = issues.stream()
+                    .filter(ACCIssue::isHighPriority)
+                    .toList();
+            }
+        }
+        return highPriorityIssues;
+    }
+    
+    /**
+     * Get count of open issues.
+     * Performance: Cached count, computed efficiently without creating list.
+     *
+     * @return Count of open issues
+     */
+    public int getOpenCount() {
+        if (openCount == null) {
+            if (issues == null) {
+                openCount = 0;
+            } else {
+                openCount = (int) issues.stream()
+                    .filter(ACCIssue::isOpen)
+                    .count();
+            }
+        }
+        return openCount;
+    }
+    
+    /**
+     * Get count of overdue issues.
+     * Performance: Cached count, computed efficiently without creating list.
+     *
+     * @return Count of overdue issues
+     */
+    public int getOverdueCount() {
+        if (overdueCount == null) {
+            if (issues == null) {
+                overdueCount = 0;
+            } else {
+                overdueCount = (int) issues.stream()
+                    .filter(ACCIssue::isOverdue)
+                    .count();
+            }
+        }
+        return overdueCount;
+    }
+    
+    /**
+     * Get count of high priority issues.
+     * Performance: Cached count, computed efficiently without creating list.
+     *
+     * @return Count of high priority issues
+     */
+    public int getHighPriorityCount() {
+        if (highPriorityCount == null) {
+            if (issues == null) {
+                highPriorityCount = 0;
+            } else {
+                highPriorityCount = (int) issues.stream()
+                    .filter(ACCIssue::isHighPriority)
+                    .count();
+            }
+        }
+        return highPriorityCount;
+    }
+    
+    /**
+     * Get issues by status.
+     * Performance: Direct filtering, not cached (less common use case).
+     *
+     * @param status The status to filter by
+     * @return List of issues with the specified status
+     */
+    public List<ACCIssue> getIssuesByStatus(String status) {
+        if (issues == null || status == null) {
+            return List.of();
         }
         return issues.stream()
-            .filter(ACCIssue::isHighPriority)
-            .collect(Collectors.toList());
+            .filter(issue -> status.equals(issue.status()))
+            .toList();
+    }
+    
+    /**
+     * Get issues by priority.
+     * Performance: Direct filtering, not cached (less common use case).
+     *
+     * @param priority The priority to filter by
+     * @return List of issues with the specified priority
+     */
+    public List<ACCIssue> getIssuesByPriority(String priority) {
+        if (issues == null || priority == null) {
+            return List.of();
+        }
+        return issues.stream()
+            .filter(issue -> priority.equals(issue.priority()))
+            .toList();
+    }
+    
+    /**
+     * Get issues assigned to a specific user.
+     * Performance: Direct filtering, not cached (less common use case).
+     *
+     * @param assignedTo The user to filter by
+     * @return List of issues assigned to the user
+     */
+    public List<ACCIssue> getIssuesByAssignee(String assignedTo) {
+        if (issues == null || assignedTo == null) {
+            return List.of();
+        }
+        return issues.stream()
+            .filter(issue -> assignedTo.equals(issue.assignedTo()))
+            .toList();
+    }
+    
+    /**
+     * Invalidate all cached results.
+     * Called when the issue list is modified.
+     */
+    private void invalidateCaches() {
+        this.openIssues = null;
+        this.overdueIssues = null;
+        this.highPriorityIssues = null;
+        this.openCount = null;
+        this.overdueCount = null;
+        this.highPriorityCount = null;
     }
 }
 
